@@ -4,7 +4,7 @@
  *
  * @author      FanYueee(繁月)
  * @link        https://github.com/FanYueee/WHMCS_SmilePay
- * @version     1.0
+ * @version     1.1
  * @license     https://github.com/FanYueee/WHMCS_SmilePay/blob/main/LICENSE MIT License
  */
 
@@ -152,7 +152,7 @@ function smilepay_barcode_link($params)
         ->first();
 
     if ($existingPaymentInfo) {
-        return smilepay_barcode_generatePaymentInstructions($existingPaymentInfo);
+        return smilepay_barcode_generatePaymentInstructions($existingPaymentInfo, $verynicename);
     }
 
     $rvg2c = $params['Rvg2c'];
@@ -199,17 +199,16 @@ function smilepay_barcode_link($params)
             'amount' => (string)$xml->Amount,
             'pay_end_date' => (string)$xml->PayEndDate,
             'smilepay_no' => (string)$xml->SmilePayNO,
-            'verynicename' => $verynicename,
         ];
         smilepay_barcode_savePaymentInfo($paymentInfo);
 
-        return smilepay_barcode_generatePaymentInstructions((object)$paymentInfo);
+        return smilepay_barcode_generatePaymentInstructions((object)$paymentInfo, $verynicename);
     } else {
         return '無法取得繳費資訊';
     }
 }
 
-function smilepay_barcode_generatePaymentInstructions($paymentInfo)
+function smilepay_barcode_generatePaymentInstructions($paymentInfo, $verynicename)
 {
     $info = (array)$paymentInfo;
     $invoiceId = $info['invoice_id'];
@@ -218,7 +217,7 @@ function smilepay_barcode_generatePaymentInstructions($paymentInfo)
     $barcodeUrl .= "barcode=" . urlencode($info['barcode1']);
     $barcodeUrl .= "&barcode=" . urlencode($info['barcode2']);
     $barcodeUrl .= "&barcode=" . urlencode($info['barcode3']);
-    $barcodeUrl .= "&name=" . urlencode($info['verynicename']);
+    $barcodeUrl .= "&name=" . urlencode($verynicename);
     $barcodeUrl .= "&invoice=" . urlencode($invoiceId);
     $barcodeUrl .= "&price=" . urlencode($info['amount']);
     $barcodeUrl .= "&date=" . urlencode($info['pay_end_date']);
