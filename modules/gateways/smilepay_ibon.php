@@ -4,7 +4,7 @@
  *
  * @author      FanYueee(繁月)
  * @link        https://github.com/FanYueee/WHMCS_SmilePay
- * @version     1.0
+ * @version     1.1
  * @license     https://github.com/FanYueee/WHMCS_SmilePay/blob/main/LICENSE MIT License
  */
 
@@ -76,7 +76,7 @@ function smilepay_ibon_ensureTableExists()
                 $table->integer('invoice_id')->unique();
                 $table->string('ibon_no', 20)->nullable();
                 $table->decimal('amount', 10, 2);
-                $table->dateTime('pay_end_date');
+                $table->dateTime('ibon_pay_end_date');
                 $table->string('smilepay_no', 20);
                 $table->enum('status', ['pending', 'paid', 'cancelled'])->default('pending');
                 $table->timestamps();
@@ -91,7 +91,7 @@ function smilepay_ibon_ensureTableExists()
                 });
             }
 
-            $requiredColumns = ['amount', 'pay_end_date', 'smilepay_no', 'status'];
+            $requiredColumns = ['amount', 'ibon_pay_end_date', 'smilepay_no', 'status'];
             foreach ($requiredColumns as $column) {
                 if (!$schema->hasColumn($tableName, $column)) {
                     $schema->table($tableName, function ($table) use ($column) {
@@ -99,8 +99,8 @@ function smilepay_ibon_ensureTableExists()
                             case 'amount':
                                 $table->decimal('amount', 10, 2)->nullable();
                                 break;
-                            case 'pay_end_date':
-                                $table->dateTime('pay_end_date')->nullable();
+                            case 'ibon_pay_end_date':
+                                $table->dateTime('ibon_pay_end_date')->nullable();
                                 break;
                             case 'smilepay_no':
                                 $table->string('smilepay_no', 20)->nullable();
@@ -183,7 +183,7 @@ function smilepay_ibon_link($params)
             'invoice_id' => $invoiceId,
             'ibon_no' => (string)$xml->IbonNo,
             'amount' => (string)$xml->Amount,
-            'pay_end_date' => (string)$xml->PayEndDate,
+            'ibon_pay_end_date' => (string)$xml->PayEndDate,
             'smilepay_no' => (string)$xml->SmilePayNO,
         ];
         smilepay_ibon_savePaymentInfo($paymentInfo);
@@ -201,7 +201,7 @@ function smilepay_ibon_generatePaymentInstructions($paymentInfo)
     return
         "Ibon 繳費代碼：" . $info['ibon_no'] . "<br>" .
         "繳費金額：" . $info['amount'] . " 元<br>" .
-        "繳費截止日期：" . $info['pay_end_date'];
+        "繳費截止日期：" . $info['ibon_pay_end_date'];
 }
 
 function smilepay_ibon_savePaymentInfo($paymentInfo)

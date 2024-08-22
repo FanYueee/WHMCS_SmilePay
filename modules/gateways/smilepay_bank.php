@@ -4,7 +4,7 @@
  *
  * @author      FanYueee(繁月)
  * @link        https://github.com/FanYueee/WHMCS_SmilePay
- * @version     1.0
+ * @version     1.1
  * @license     https://github.com/FanYueee/WHMCS_SmilePay/blob/main/LICENSE MIT License
  */
 
@@ -76,7 +76,7 @@ function smilepay_bank_ensureTableExists()
                 $table->string('atm_bank_no', 10)->nullable();
                 $table->string('atm_no', 20)->nullable();
                 $table->decimal('amount', 10, 2);
-                $table->dateTime('pay_end_date');
+                $table->dateTime('bank_pay_end_date');
                 $table->string('smilepay_no', 20);
                 $table->enum('status', ['pending', 'paid', 'cancelled'])->default('pending');
                 $table->timestamps();
@@ -84,7 +84,7 @@ function smilepay_bank_ensureTableExists()
         } else {
             $schema = Capsule::schema();
             $tableName = 'mod_smilepay_payment_info';
-            $columns = ['atm_bank_no', 'atm_no', 'amount', 'pay_end_date', 'smilepay_no', 'status'];
+            $columns = ['atm_bank_no', 'atm_no', 'amount', 'bank_pay_end_date', 'smilepay_no', 'status'];
             foreach ($columns as $column) {
                 if (!$schema->hasColumn($tableName, $column)) {
                     $schema->table($tableName, function ($table) use ($column) {
@@ -98,8 +98,8 @@ function smilepay_bank_ensureTableExists()
                             case 'amount':
                                 $table->decimal('amount', 10, 2)->nullable();
                                 break;
-                            case 'pay_end_date':
-                                $table->dateTime('pay_end_date')->nullable();
+                            case 'bank_pay_end_date':
+                                $table->dateTime('bank_pay_end_date')->nullable();
                                 break;
                             case 'smilepay_no':
                                 $table->string('smilepay_no', 20)->nullable();
@@ -184,7 +184,7 @@ function smilepay_bank_link($params)
             'atm_bank_no' => (string)$xml->AtmBankNo,
             'atm_no' => (string)$xml->AtmNo,
             'amount' => (string)$xml->Amount,
-            'pay_end_date' => (string)$xml->PayEndDate,
+            'bank_pay_end_date' => (string)$xml->PayEndDate,
             'smilepay_no' => (string)$xml->SmilePayNO,
         ];
         smilepay_bank_savePaymentInfo($paymentInfo);
@@ -203,7 +203,7 @@ function smilepay_bank_generatePaymentInstructions($paymentInfo)
         "銀行代號：" . $info['atm_bank_no'] . "<br>" .
         "銀行帳號：" . $info['atm_no'] . "<br>" .
         "繳費金額：" . $info['amount'] . " 元<br>" .
-        "繳費截止日期：" . $info['pay_end_date'];
+        "繳費截止日期：" . $info['bank_pay_end_date'];
 }
 
 function smilepay_bank_savePaymentInfo($paymentInfo)

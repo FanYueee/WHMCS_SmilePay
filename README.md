@@ -19,7 +19,7 @@
 
 另外驗證參數也請務必設定，確保回傳資料接收正確。
 ## 使用聲明
-SmilePay-WHMCS 是基於 [MIT License](https://github.com/FanYueee/WHMCS_SmilePay/blob/main/LICENSE) 所發布。
+WHMCS_SmilePay 是基於 [MIT License](https://github.com/FanYueee/WHMCS_SmilePay/blob/main/LICENSE) 所發布。
 
 在轉發或重新發布時也請留下原作者名稱。
 

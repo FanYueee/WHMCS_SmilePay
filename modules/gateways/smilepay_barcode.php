@@ -4,7 +4,7 @@
  *
  * @author      FanYueee(繁月)
  * @link        https://github.com/FanYueee/WHMCS_SmilePay
- * @version     1.1
+ * @version     1.2
  * @license     https://github.com/FanYueee/WHMCS_SmilePay/blob/main/LICENSE MIT License
  */
 
@@ -84,7 +84,7 @@ function smilepay_barcode_ensureTableExists()
                 $table->string('barcode2', 20)->nullable();
                 $table->string('barcode3', 20)->nullable();
                 $table->decimal('amount', 10, 2);
-                $table->dateTime('pay_end_date');
+                $table->dateTime('barcode_pay_end_date');
                 $table->string('smilepay_no', 20);
                 $table->enum('status', ['pending', 'paid', 'cancelled'])->default('pending');
                 $table->timestamps();
@@ -102,7 +102,7 @@ function smilepay_barcode_ensureTableExists()
                 }
             }
 
-            $requiredColumns = ['amount', 'pay_end_date', 'smilepay_no', 'status'];
+            $requiredColumns = ['amount', 'barcode_pay_end_date', 'smilepay_no', 'status'];
             foreach ($requiredColumns as $column) {
                 if (!$schema->hasColumn($tableName, $column)) {
                     $schema->table($tableName, function ($table) use ($column) {
@@ -110,8 +110,8 @@ function smilepay_barcode_ensureTableExists()
                             case 'amount':
                                 $table->decimal('amount', 10, 2)->nullable();
                                 break;
-                            case 'pay_end_date':
-                                $table->dateTime('pay_end_date')->nullable();
+                            case 'barcode_pay_end_date':
+                                $table->dateTime('barcode_pay_end_date')->nullable();
                                 break;
                             case 'smilepay_no':
                                 $table->string('smilepay_no', 20)->nullable();
@@ -197,7 +197,7 @@ function smilepay_barcode_link($params)
             'barcode2' => (string)$xml->Barcode2,
             'barcode3' => (string)$xml->Barcode3,
             'amount' => (string)$xml->Amount,
-            'pay_end_date' => (string)$xml->PayEndDate,
+            'barcode_pay_end_date' => (string)$xml->PayEndDate,
             'smilepay_no' => (string)$xml->SmilePayNO,
         ];
         smilepay_barcode_savePaymentInfo($paymentInfo);
@@ -220,11 +220,11 @@ function smilepay_barcode_generatePaymentInstructions($paymentInfo, $verynicenam
     $barcodeUrl .= "&name=" . urlencode($verynicename);
     $barcodeUrl .= "&invoice=" . urlencode($invoiceId);
     $barcodeUrl .= "&price=" . urlencode($info['amount']);
-    $barcodeUrl .= "&date=" . urlencode($info['pay_end_date']);
+    $barcodeUrl .= "&date=" . urlencode($info['barcode_pay_end_date']);
 
     $output = "<a href=\"{$barcodeUrl}\" target=\"_blank\"><button>顯示繳費條碼</button></a><br>";
     $output .= "繳費金額：" . $info['amount'] . " 元<br>";
-    $output .= "繳費截止日期：" . $info['pay_end_date'] . "<br>";
+    $output .= "繳費截止日期：" . $info['barcode_pay_end_date'] . "<br>";
 
     return $output;
 }
