@@ -198,6 +198,8 @@ function smilepay_bank_link($params)
 function smilepay_bank_generatePaymentInstructions($paymentInfo)
 {
     $info = (array)$paymentInfo;
+
+    $qrCodeUrl = 'https://payment-code.atomroute.com/qrcode.php?code=' . "TWQRP://台灣銀行轉帳/158/02/V1?D1=". intval($info['amount']) . "00" . "&D5=".$info['atm_bank_no'] . "&D6=" . $info['atm_no'];
     
     $style = "
         style='
@@ -217,6 +219,8 @@ function smilepay_bank_generatePaymentInstructions($paymentInfo)
             繳費截止日期：" . $info['bank_pay_end_date'] . "
         </div>
         <br>
+        <strong>台灣銀行轉帳 QRCode</strong><br>
+        <img src='" . $qrCodeUrl . "' alt='台灣銀行轉帳 QR Code' style='margin-top: 10px; width: 100%; max-width: 150px; height: auto;'>
     ";
 
 }
