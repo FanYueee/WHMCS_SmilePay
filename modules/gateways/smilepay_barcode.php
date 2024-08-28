@@ -4,7 +4,7 @@
  *
  * @author      FanYueee(繁月)
  * @link        https://github.com/FanYueee/WHMCS_SmilePay
- * @version     1.2
+ * @version     1.3
  * @license     https://github.com/FanYueee/WHMCS_SmilePay/blob/main/LICENSE MIT License
  */
 
@@ -222,9 +222,35 @@ function smilepay_barcode_generatePaymentInstructions($paymentInfo, $verynicenam
     $barcodeUrl .= "&price=" . urlencode($info['amount']);
     $barcodeUrl .= "&date=" . urlencode($info['barcode_pay_end_date']);
 
-    $output = "<a href=\"{$barcodeUrl}\" target=\"_blank\"><button>顯示繳費條碼</button></a><br>";
-    $output .= "繳費金額：" . $info['amount'] . " 元<br>";
-    $output .= "繳費截止日期：" . $info['barcode_pay_end_date'] . "<br>";
+    $style = "
+        style='
+            text-align: left;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: inline-block;
+        '
+    ";
+
+    $buttonStyle = "
+    style='
+        background-color: #248756;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    '
+    ";
+    
+    $output = "
+        <div $style>
+            繳費金額：" . intval($info['amount']) . " 元<br>
+            繳費截止日期：" . $info['barcode_pay_end_date'] . "
+        </div>
+        <br>
+        <a href=\"{$barcodeUrl}\" target=\"_blank\"><button $buttonStyle>顯示繳費條碼</button></a>
+    ";
 
     return $output;
 }

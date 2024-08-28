@@ -4,7 +4,7 @@
  *
  * @author      FanYueee(繁月)
  * @link        https://github.com/FanYueee/WHMCS_SmilePay
- * @version     1.1
+ * @version     1.2
  * @license     https://github.com/FanYueee/WHMCS_SmilePay/blob/main/LICENSE MIT License
  */
 
@@ -197,11 +197,29 @@ function smilepay_ibon_link($params)
 function smilepay_ibon_generatePaymentInstructions($paymentInfo)
 {
     $info = (array)$paymentInfo;
+    
+    $qrCodeUrl = 'https://payment-code.atomroute.com/qrcode.php?code=' . urlencode($info['ibon_no']);
 
-    return
-        "Ibon 繳費代碼：" . $info['ibon_no'] . "<br>" .
-        "繳費金額：" . $info['amount'] . " 元<br>" .
-        "繳費截止日期：" . $info['ibon_pay_end_date'];
+    $style = "
+        style='
+            text-align: left;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: inline-block;
+        '
+    ";
+
+    return "
+        <div $style>
+            Ibon 繳費代碼：" . $info['ibon_no'] . "<br>
+            繳費金額：" . intval($info['amount']) . " 元<br>
+            繳費截止日期：" . $info['ibon_pay_end_date'] . "
+        </div>
+        <br>
+        <strong>Ibon 專用 QRCode</strong><br>
+        <img src='" . $qrCodeUrl . "' alt='Ibon 繳費代碼 QR Code' style='margin-top: 10px; width: 100%; max-width: 150px; height: auto;'>
+    ";
 }
 
 function smilepay_ibon_savePaymentInfo($paymentInfo)

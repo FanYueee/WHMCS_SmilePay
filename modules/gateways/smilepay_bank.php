@@ -4,7 +4,7 @@
  *
  * @author      FanYueee(繁月)
  * @link        https://github.com/FanYueee/WHMCS_SmilePay
- * @version     1.1
+ * @version     1.2
  * @license     https://github.com/FanYueee/WHMCS_SmilePay/blob/main/LICENSE MIT License
  */
 
@@ -198,12 +198,27 @@ function smilepay_bank_link($params)
 function smilepay_bank_generatePaymentInstructions($paymentInfo)
 {
     $info = (array)$paymentInfo;
+    
+    $style = "
+        style='
+            text-align: left;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: inline-block;
+        '
+    ";
+    
+    return "
+        <div $style>
+            銀行代號：" . $info['atm_bank_no'] . "<br>
+            銀行帳號：" . $info['atm_no'] . "<br>
+            繳費金額：" . intval($info['amount']) . " 元<br>
+            繳費截止日期：" . $info['bank_pay_end_date'] . "
+        </div>
+        <br>
+    ";
 
-    return
-        "銀行代號：" . $info['atm_bank_no'] . "<br>" .
-        "銀行帳號：" . $info['atm_no'] . "<br>" .
-        "繳費金額：" . $info['amount'] . " 元<br>" .
-        "繳費截止日期：" . $info['bank_pay_end_date'];
 }
 
 function smilepay_bank_savePaymentInfo($paymentInfo)
