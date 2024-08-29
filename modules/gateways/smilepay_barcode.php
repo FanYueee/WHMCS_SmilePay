@@ -63,13 +63,6 @@ function smilepay_barcode_config()
             'Default' => '',
             'Description' => 'SmilePay 四位數商家驗證參數',
         ],
-        'Yourcoolname' => [
-            'FriendlyName' => '你的主機商名稱',
-            'Type' => 'text',
-            'Size' => '25',
-            'Default' => '',
-            'Description' => '這會顯示在條碼顯示頁面上',
-        ],
     ];
 }
 
@@ -135,7 +128,6 @@ function smilepay_barcode_link($params)
 
     $invoiceId = $params['invoiceid'];
     $currentAmount = $params['amount'];
-    $verynicename = $params['Yourcoolname'];
 
     $existingPaymentInfo = Capsule::table('mod_smilepay_payment_info')
         ->where('invoice_id', $invoiceId)
@@ -204,15 +196,6 @@ function smilepay_barcode_generatePaymentInstructions($paymentInfo, $verynicenam
     $info = (array)$paymentInfo;
     $invoiceId = $info['invoice_id'];
 
-    $barcodeUrl = "https://barcode.vproxy.cloud/barcode?";
-    $barcodeUrl .= "barcode=" . urlencode($info['barcode1']);
-    $barcodeUrl .= "&barcode=" . urlencode($info['barcode2']);
-    $barcodeUrl .= "&barcode=" . urlencode($info['barcode3']);
-    $barcodeUrl .= "&name=" . urlencode($verynicename);
-    $barcodeUrl .= "&invoice=" . urlencode($invoiceId);
-    $barcodeUrl .= "&price=" . urlencode($info['amount']);
-    $barcodeUrl .= "&date=" . urlencode($info['barcode_pay_end_date']);
-
     $style = "
         style='
             text-align: left;
@@ -233,14 +216,34 @@ function smilepay_barcode_generatePaymentInstructions($paymentInfo, $verynicenam
         cursor: pointer;
     '
     ";
-    
+
     $output = "
         <div $style>
             繳費金額：" . intval($info['amount']) . " 元<br>
             繳費截止日期：" . $info['barcode_pay_end_date'] . "
         </div>
         <br>
-        <a href=\"{$barcodeUrl}\" target=\"_blank\"><button $buttonStyle>顯示繳費條碼</button></a>
+        <button onclick=\"showBarcode('{$invoiceId}', '" . intval($info['amount']) . "', '{$info['barcode_pay_end_date']}', '{$info['barcode1']}', '{$info['barcode2']}', '{$info['barcode3']}')\" $buttonStyle>顯示繳費條碼</button>
+        <script>
+        function showBarcode(invoiceId, amount, payEndDate, barcode1, barcode2, barcode3) {
+            var w = 600;
+            var h = 550;
+            var left = (screen.width/2)-(w/2);
+            var top = (screen.height/2)-(h/2);
+            var newWindow = window.open('', '_blank', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+            newWindow.document.write('<html><head><title>繳費條碼</title></head><body style=\"margin:0; display:flex; justify-content:center; align-items:center; flex-direction:column; font-family: Arial, sans-serif;\">');
+            newWindow.document.write('<table style=\"width:80%; margin-bottom:20px; border-collapse: collapse;\">');
+            newWindow.document.write('<tr><th style=\"border:1px solid #ddd; padding:8px; background-color:#f2f2f2; text-align:left; width:30%;\">帳單編號</th><td style=\"border:1px solid #ddd; padding:8px;\">' + invoiceId + '</td></tr>');
+            newWindow.document.write('<tr><th style=\"border:1px solid #ddd; padding:8px; background-color:#f2f2f2; text-align:left; width:30%;\">帳單金額</th><td style=\"border:1px solid #ddd; padding:8px;\">NT$ ' + amount + '</td></tr>');
+            newWindow.document.write('<tr><th style=\"border:1px solid #ddd; padding:8px; background-color:#f2f2f2; text-align:left; width:30%;\">繳費期限</th><td style=\"border:1px solid #ddd; padding:8px;\">' + payEndDate + '</td></tr>');
+            newWindow.document.write('</table>');
+            newWindow.document.write('<img src=\"https://payment-code.atomroute.com/barcode.php?code=' + barcode1 + '\" style=\"margin-bottom:10px;\">');
+            newWindow.document.write('<img src=\"https://payment-code.atomroute.com/barcode.php?code=' + barcode2 + '\" style=\"margin-bottom:10px;\">');
+            newWindow.document.write('<img src=\"https://payment-code.atomroute.com/barcode.php?code=' + barcode3 + '\">');
+            newWindow.document.write('</body></html>');
+            newWindow.document.close();
+        }
+        </script>
     ";
 
     return $output;
