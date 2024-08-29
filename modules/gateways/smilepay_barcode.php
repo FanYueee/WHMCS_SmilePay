@@ -4,7 +4,7 @@
  *
  * @author      FanYueee(繁月)
  * @link        https://github.com/FanYueee/WHMCS_SmilePay
- * @version     1.3
+ * @version     1.4
  * @license     https://github.com/FanYueee/WHMCS_SmilePay/blob/main/LICENSE MIT License
  */
 
@@ -133,17 +133,8 @@ function smilepay_barcode_link($params)
 {
     smilepay_barcode_ensureTableExists();
 
-    $systemUrl = $params['systemurl'];
-    $returnUrl = $params['returnurl'];
-    $langPayNow = $params['langpaynow'];
-    $moduleDisplayName = $params['name'];
-    $moduleName = $params['paymentmethod'];
-    $whmcsVersion = $params['whmcsVersion'];
-
     $invoiceId = $params['invoiceid'];
-    $description = $params["description"];
-    $amount = $params['amount'];
-    $currencyCode = $params['currency'];
+    $currentAmount = $params['amount'];
     $verynicename = $params['Yourcoolname'];
 
     $existingPaymentInfo = Capsule::table('mod_smilepay_payment_info')
@@ -151,7 +142,7 @@ function smilepay_barcode_link($params)
         ->whereNotNull('barcode1')
         ->first();
 
-    if ($existingPaymentInfo) {
+    if ($existingPaymentInfo && $existingPaymentInfo->amount == $currentAmount) {
         return smilepay_barcode_generatePaymentInstructions($existingPaymentInfo, $verynicename);
     }
 
@@ -169,7 +160,7 @@ function smilepay_barcode_link($params)
         'Rvg2c' => $rvg2c,
         'Dcvc' => $dcvc,
         'Od_sob' => $invoiceId,
-        'Amount' => $amount,
+        'Amount' => $currentAmount,
         'Pur_name' => $params['clientdetails']['firstname'] . ' ' . $params['clientdetails']['lastname'],
         'Mobile_number' => $params['clientdetails']['phonenumber'],
         'Email' => $params['clientdetails']['email'],

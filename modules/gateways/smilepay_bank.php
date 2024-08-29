@@ -4,7 +4,7 @@
  *
  * @author      FanYueee(繁月)
  * @link        https://github.com/FanYueee/WHMCS_SmilePay
- * @version     1.2
+ * @version     1.4
  * @license     https://github.com/FanYueee/WHMCS_SmilePay/blob/main/LICENSE MIT License
  */
 
@@ -121,17 +121,8 @@ function smilepay_bank_link($params)
 {
     smilepay_bank_ensureTableExists();
 
-    $systemUrl = $params['systemurl'];
-    $returnUrl = $params['returnurl'];
-    $langPayNow = $params['langpaynow'];
-    $moduleDisplayName = $params['name'];
-    $moduleName = $params['paymentmethod'];
-    $whmcsVersion = $params['whmcsVersion'];
-
     $invoiceId = $params['invoiceid'];
-    $description = $params["description"];
-    $amount = $params['amount'];
-    $currencyCode = $params['currency'];
+    $currentAmount = $params['amount'];
 
     $existingPaymentInfo = Capsule::table('mod_smilepay_payment_info')
         ->where('invoice_id', $invoiceId)
@@ -139,7 +130,7 @@ function smilepay_bank_link($params)
         ->whereNotNull('atm_no')
         ->first();
 
-    if ($existingPaymentInfo) {
+    if ($existingPaymentInfo && $existingPaymentInfo->amount == $currentAmount) {
         return smilepay_bank_generatePaymentInstructions($existingPaymentInfo);
     }
 
@@ -157,7 +148,7 @@ function smilepay_bank_link($params)
         'Rvg2c' => $rvg2c,
         'Dcvc' => $dcvc,
         'Od_sob' => $invoiceId,
-        'Amount' => $amount,
+        'Amount' => $currentAmount,
         'Pur_name' => $params['clientdetails']['firstname'] . ' ' . $params['clientdetails']['lastname'],
         'Mobile_number' => $params['clientdetails']['phonenumber'],
         'Email' => $params['clientdetails']['email'],
@@ -193,7 +184,7 @@ function smilepay_bank_link($params)
     } else {
         return '無法取得繳費資訊';
     }
-}
+
 
 function smilepay_bank_generatePaymentInstructions($paymentInfo)
 {
