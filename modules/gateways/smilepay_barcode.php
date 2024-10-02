@@ -4,7 +4,7 @@
  *
  * @author      FanYueee(繁月)
  * @link        https://github.com/FanYueee/WHMCS_SmilePay
- * @version     1.5
+ * @version     1.6
  * @license     https://github.com/FanYueee/WHMCS_SmilePay/blob/main/LICENSE MIT License
  */
 
@@ -127,7 +127,7 @@ function smilepay_barcode_link($params)
     smilepay_barcode_ensureTableExists();
 
     $invoiceId = $params['invoiceid'];
-    $currentAmount = $params['amount'];
+    $currentAmount = round($params['amount']);
 
     $existingPaymentInfo = Capsule::table('mod_smilepay_payment_info')
         ->where('invoice_id', $invoiceId)

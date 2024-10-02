@@ -4,7 +4,7 @@
  *
  * @author      FanYueee(繁月)
  * @link        https://github.com/FanYueee/WHMCS_SmilePay
- * @version     1.4
+ * @version     1.5
  * @license     https://github.com/FanYueee/WHMCS_SmilePay/blob/main/LICENSE MIT License
  */
 
@@ -122,7 +122,7 @@ function smilepay_bank_link($params)
     smilepay_bank_ensureTableExists();
 
     $invoiceId = $params['invoiceid'];
-    $currentAmount = $params['amount'];
+    $currentAmount = round($params['amount']);
 
     $existingPaymentInfo = Capsule::table('mod_smilepay_payment_info')
         ->where('invoice_id', $invoiceId)
@@ -185,6 +185,7 @@ function smilepay_bank_link($params)
         return '無法取得繳費資訊';
     }
 
+}
 
 function smilepay_bank_generatePaymentInstructions($paymentInfo)
 {
