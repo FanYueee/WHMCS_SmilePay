@@ -190,9 +190,15 @@ function smilepay_bank_link($params)
 function smilepay_bank_generatePaymentInstructions($paymentInfo)
 {
     $info = (array)$paymentInfo;
+    $bank_pay_end_date_for_qrcode = date('YmdHis', strtotime($info['bank_pay_end_date']));
 
-    $qrCodeUrl = 'https://payment-code.atomroute.com/qrcode.php?code=' . "TWQRP://台灣銀行轉帳/158/02/V1?D1=". intval($info['amount']) . "00" . "&D5=".$info['atm_bank_no'] . "&D6=" . $info['atm_no'];
+    $qrCodeUrl = 'https://payment-code.atomroute.com/qrcode.php?code=' . "TWQRP://台灣銀行轉帳/158/02/V1?D1=". intval($info['amount']) . "00" . "&D5=".$info['atm_bank_no'] . "&D6=" . $info['atm_no'] . "&D12=" . $bank_pay_end_date_for_qrcode;
     
+    $atm_no_f = chunk_split($info['atm_no'], 4, ' ');
+    $atm_no_f = trim($atm_no_f);
+
+    if($info['atm_bank_no'] == '004') $bank_name = '臺灣銀行';
+
     $style = "
         style='
             text-align: left;
@@ -205,8 +211,8 @@ function smilepay_bank_generatePaymentInstructions($paymentInfo)
     
     return "
         <div $style>
-            銀行代號：" . $info['atm_bank_no'] . "<br>
-            銀行帳號：" . $info['atm_no'] . "<br>
+            銀行代號：" . $info['atm_bank_no'] . " " . $bank_name . "<br>
+            銀行帳號：" . $atm_no_f . "<br>
             繳費金額：" . intval($info['amount']) . " 元<br>
             繳費截止日期：" . $info['bank_pay_end_date'] . "
         </div>
